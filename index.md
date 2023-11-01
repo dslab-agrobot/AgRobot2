@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Index
+title: 🚜Index
 nav_exclude: true
 ---
 
