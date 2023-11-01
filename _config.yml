@@ -1,9 +1,9 @@
-title: Read The Docs Jekyll Theme
-description: Port of the Read the Docs theme to Jekyll to use with GitHub Pages.
+title: AgRobot Documentation
+description: Introduction and release docs.
 remote_theme: carlosperate/jekyll-theme-rtd
 
 # Theme settings:
-site_author: Carlos Pereira Atencio
+site_author: Xuetao Jiang
 repo_url: "https://github.com/carlosperate/jekyll-theme-rtd"
 edit_on_github: true
 github_docs_folder: false
