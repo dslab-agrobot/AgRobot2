@@ -3,7 +3,7 @@ description: Introduction and release docs.
 remote_theme: carlosperate/jekyll-theme-rtd
 
 # Theme settings:
-site_author: Xuetao Jiang
+site_author: DSLAB AgRobot
 repo_url: "https://github.com/carlosperate/jekyll-theme-rtd"
 edit_on_github: true
 github_docs_folder: false

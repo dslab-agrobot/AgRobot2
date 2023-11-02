@@ -1,6 +1,6 @@
 ---
 layout: default
-title: 🚜 Agriculture robot breif introduction
+title: 🚜 Agriculture robot introduction
 nav_order: 1
 ---
 [Chinese version(中文版)](./intro_zh.md)
