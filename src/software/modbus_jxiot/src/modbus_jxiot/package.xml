@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>modbus_plc_siemens</name>
+  <name>modbus_jxiot</name>
   <version>0.0.0</version>
-  <description>The modbus_PLC_siemens package</description>
+  <description>The modbus_jxiot package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 
   <!-- Example:  -->
@@ -45,7 +45,10 @@
   <run_depend>std_msgs</run_depend>
   <build_depend>modbus</build_depend>
   <run_depend>modbus</run_depend>
-	
+  <build_depend>message_generation</build_depend>
+  <run_depend>message_runtime</run_depend>
+  <build_depend>rospy</build_depend>
+  <run_depend>rospy</run_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->

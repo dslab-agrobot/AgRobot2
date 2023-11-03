@@ -1,15 +1,14 @@
 import rospy
 import pymodbus
-from modbus.modbus_wrapper_client import ModbusWrapperClient 
+from modbus_jxiot.modbus_wrapper_client import ModbusWrapperClient
+from modbus_jxiot.d9_modbus_client import D9ModbusClient
 from pymodbus.register_read_message import ReadInputRegistersResponse
 # from pyModbusTCP.client import ModbusClient
 from std_msgs.msg import Int32MultiArray as HoldingRegister
-from std_msgs.msg import String as Operation # 1、multiAxisAbsoluteMove  2、multiAxisStateRead  3、multiAxisStopControl
-from std_msgs.msg import Int32 as Position # 0~20200
-from std_msgs.msg import Int32 as Axis   # 0~5
-from modbus.msg import absolute_mov 
-from modbus.msg import readable_address
-from modbus.msg import stop_controlling
+from modbus_jxiot.msg import subscriber_msg as subscriber
+from modbus_jxiot.msg import absolute_mov 
+from modbus_jxiot.msg import readable_address
+from modbus_jxiot.msg import stop_controlling
 
 if __name__=="__main__":
     rospy.init_node("modbus_subscriber_client")
@@ -23,25 +22,14 @@ if __name__=="__main__":
     operation = None
     axis = 0
 
-    def callback_position(msg):
-        global position
-        position = msg.data
-        rospy.loginfo("Received position message: %d", msg.data)     
-
-    def callback_operation(msg):
-        global operation
-        operation = msg.data
-        rospy.loginfo("Received operation message: %s", msg.data)
-
-    def callback_axis(msg):
-        global axis
-        axis = msg.data
-        rospy.loginfo("Received axis message: %d", msg.data)     
+    def callback_subscriber(msg):
+        global operation,axis,position 
+        operation = msg.operation
+        axis = msg.axis
+        position = msg.position
+        rospy.loginfo("Received subscriber message: operation:%s axis:%d position:%d", operation,axis,position)     
         
-
-    rospy.Subscriber("position/input",Position,callback_position,queue_size=50)
-    rospy.Subscriber("operation/input",Operation,callback_operation,queue_size=50)
-    rospy.Subscriber("axis/input",Axis,callback_axis,queue_size=50)
+    rospy.Subscriber("subscriber/input",callback_subscriber,queue_size=50)
 
     # 循环监听订阅到的消息
     rospy.spin()
@@ -63,20 +51,24 @@ if __name__=="__main__":
         address_write_start = address_read_start
         oper = stop_controlling.oper
 
-    # 启动modbus客户端    
-    modclient = ModbusWrapperClient(host,port=port,rate=50,ADDRESS_READ_START = address_read_start,
-                                    ADDRESS_WRITE_START=address_write_start,NUM_REGISTERS=num_registers,
-                                    reset_registers=True,sub_topic="modbus_wrapper/output",pub_topic="modbus_wrapper/input")
+    # 启动modbus客户端     
+    client = D9ModbusClient(host,port=port)
+    modbusWrapperClient = client.getModbusWrapperClient()
+
     # 设置应读取的寄存器的起始地址及寄存器数量；
-    modclient.setReadingRegisters(address_read_start,num_registers)
-    print("modclient.getReadingRegisters():",modclient.getReadingRegisters())
+    # modclient.setReadingRegisters(address_read_start,num_registers)
+    modbusWrapperClient.setReadingRegisters(address_read_start,num_registers)
+    print("modclient.getReadingRegisters():",modbusWrapperClient.getReadingRegisters())
+
     # 设置可写寄存器的起始地址及寄存器数量;
-    modclient.setWritingRegisters(address_write_start,num_registers)
-    print("modclient.getWritingRegisters():",modclient.getWritingRegisters())
+    # modclient.setWritingRegisters(address_write_start,num_registers)
+    modbusWrapperClient.setWritingRegisters(address_write_start,num_registers)
+    print("modclient.getWritingRegisters():",modbusWrapperClient.getWritingRegisters())
+    
     rospy.loginfo("Setup complete")
     
     # 开始监听modbus并发布对rostopic的更改；
-    modclient.startListening(oper)
+    modbusWrapperClient.startListening(oper)
     rospy.loginfo("Listener started")
 
     # 创建一个监听器，如果可读modbus寄存器上的任何内容发生更改，则向我们显示一条消息 
@@ -89,10 +81,10 @@ if __name__=="__main__":
     pub = rospy.Publisher("modbus_wrapper/output",HoldingRegister,queue_size=50)
 
     if oper == 0:
-        modclient.multiAxisStateRead(address_read_start,num_registers)
+        client.multiAxisStateRead(address_read_start,num_registers)
     elif oper == 1:
         values = [0,0]*axis
-        modclient.multiAxisStopControl(address_write_start,values)
+        client.multiAxisStopControl(address_write_start,values)
     elif oper == 2:
          # 对position进行合法判断
         try: 
@@ -104,8 +96,8 @@ if __name__=="__main__":
         values = [0,position]*axis 
         # values = [0,p] for p in [] #pos0-pos3
 
-        modclient.multiAxisAbsoluteMove(pub,address_read_start,num_registers,address_write_start,values)
+        client.multiAxisAbsoluteMove(pub,address_read_start,num_registers,address_write_start,values)
 
     # 停止监听
-    modclient.stopListening(oper)      
+    modbusWrapperClient.stopListening(oper)      
    

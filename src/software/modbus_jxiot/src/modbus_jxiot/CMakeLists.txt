@@ -2,11 +2,16 @@ cmake_minimum_required(VERSION 2.8.3)
 project(modbus_jxiot)
 
 ## Find catkin macros and libraries
+## if COMPONENTS list like find_package(catkin REQcmake_minimum_required(VERSION 2.8.3)
+project(modbus_jxiot)
+
+## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   std_msgs
-  modbus
+  message_generation
+  rospy
 )
 
 ## System dependencies are found with CMake's conventions
@@ -20,8 +25,8 @@ catkin_python_setup()
 
 add_message_files(FILES absolute_mov.msg)
 add_message_files(FILES readable_address.msg)
-add_message_files(FILES relative_mov.msg)
 add_message_files(FILES stop_controlling.msg)
+add_message_files(FILES subscriber_msg.msg)
 generate_messages(DEPENDENCIES std_msgs)
 
 ################################################
@@ -87,7 +92,7 @@ generate_messages(DEPENDENCIES std_msgs)
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES modbus_PLC_siemens
-#  CATKIN_DEPENDS std_msgs
+  CATKIN_DEPENDS std_msgs message_runtime rospy
 #  DEPENDS system_lib
 )
 

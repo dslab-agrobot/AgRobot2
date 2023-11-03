@@ -15,6 +15,23 @@
 #
 # Copyright (c) 2013, Generation Robots.
 # All rights reserved.
+# www.genera.. 	.____    .__                                   
+	|    |   |__| ____  ____   ____   ______ ____  
+	|    |   |  |/ ___\/ __ \ /    \ /  ___// __ \ 
+	|    |___|  \  \__\  ___/|   |  \\___ \\  ___/ 
+	|_______ \__|\___  >___  >___|  /____  >\___  >
+	        \/       \/    \/     \/     \/     \/ 
+	
+
+########################################################################### 
+# This software is graciously provided by HumaRobotics 
+# under the Simplified BSD License on
+# github: https://github.com/Humarobotics/modbus_wrapper
+# HumaRobotics is a trademark of Generation Robots.
+# www.humarobotics.com 
+#
+# Copyright (c) 2013, Generation Robots.
+# All rights reserved.
 # www.generationrobots.com
 #   
 # Redistribution and use in source and binary forms, with or without 

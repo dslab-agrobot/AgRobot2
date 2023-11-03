@@ -3,6 +3,11 @@
 # This software is graciously provided by HumaRobotics 
 # under the Simplified BSD License on
 # github: git@www.humarobotics.com:baxter_tasker
+# HumaR
+########################################################################### 
+# This software is graciously provided by HumaRobotics 
+# under the Simplified BSD License on
+# github: git@www.humarobotics.com:baxter_tasker
 # HumaRobotics is a trademark of Generation Robots.
 # www.humarobotics.com 
 
@@ -12,8 +17,9 @@
 #   
 # Redistribution and use in source and binary forms, with or without 
 # modification, are permitted provided that the following conditions are met:
-
-from modbus.modbus_wrapper_client import ModbusWrapperClient
+import rospy
+from modbus_jxiot.modbus_wrapper_client import ModbusWrapperClient
+from std_msgs.msg import Int32MultiArray as HoldingRegister
 
 # MD-9DI6SM-TCP
 class D9ModbusClient(ModbusWrapperClient):
@@ -27,14 +33,25 @@ class D9ModbusClient(ModbusWrapperClient):
             :type reset_registers: bool
         """
 #         print("Use the appropriate Step7 Project to enable the Modbus Server on your Siemens S1200 PLC")
-        ModbusWrapperClient.__init__(self,host,port,rate,reset_registers)
+
+        # init wrappered ModbusWrapperClient object
+        modbusWrapperClient = ModbusWrapperClient()
+        modbusWrapperClient.__init__(self,host,port,rate,ADDRESS_READ_START = 0,ADDRESS_WRITE_START = 0,NUM_REGISTERS = 0,reset_registers = True,sub_topic="modbus_wrapper/output",pub_topic="modbus_wrapper/input")
+        self._modbusWrapperClient = modbusWrapperClient
+        # start listening whether reading values isn't equaled with writing values
+        # modbusWrapperClient.startListening()
         #self.startListening()
+
+    def getModbusWrapperClient(self):
+        return self._modbusWrapperClient
 
     # 多轴状态读取
     def multiAxisStateRead(self,pub,address_read_start,num_registers):
         rospy.loginfo("多轴状态读取")
+
         # 读取寄存器数据
-        result = self.readRegisters(address_read_start,num_registers)
+        modbusWrapperClient = self.getModbusWrapperClient()
+        result = modbusWrapperClient.readRegisters(address_read_start,num_registers)
         msg = HoldingRegister()
         msg.data = result
 
@@ -57,15 +74,17 @@ class D9ModbusClient(ModbusWrapperClient):
     def multiAxisAbsoluteMove(self,pub,address_read_start,num_registers,address_write_start,values):
         rospy.loginfo("多轴绝对位置移动")
 
+        modbusWrapperClient = self.getModbusWrapperClient()
+
         # 写入寄存器数据
-        self.writeRegisters(address=address_write_start,values=values)
+        modbusWrapperClient.writeRegisters(address=address_write_start,values=values)
         #print("client.write_registers(address=12160,values=values):",modclient.writeRegisters(address=12160,values=values))
 
         # 读取寄存器数据
-        result = self.readRegisters(address_read_start,num_registers)
+        result = modbusWrapperClient.readRegisters(address_read_start,num_registers)
         while result != values:
             rospy.sleep(1)
-            result = self.readRegisters(address_read_start,num_registers)
+            result = modbusWrapperClient.readRegisters(address_read_start,num_registers)
         msg = HoldingRegister()
         msg.data = result
         # output2 = HoldingRegister()
@@ -86,15 +105,20 @@ class D9ModbusClient(ModbusWrapperClient):
                 #client.write_registers(address=12160,values=[0])
                 break
     
+    # 多轴绝对位置移动
+    # def multiAxisAbsoluteMoveWithDefinedAxis():
+
     # 多轴停止控制
     def multiAxisStopControl(self,address_write_start,values):
        rospy.loginfo("多轴停止控制")
+       
+       modbusWrapperClient = self.getModbusWrapperClient()
 
        # 停止的轴写入0
-       self.writeRegisters(address=address_write_start,values=values)
+       modbusWrapperClient.writeRegisters(address=address_write_start,values=values)
        print("client.write_registers(address=12096,values=values):",self.writeRegisters(address=address_write_start,values=values))
         
-        
+
     
 
     

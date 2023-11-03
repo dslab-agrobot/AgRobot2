@@ -42,9 +42,9 @@ from modbus_jxiot.modbus_wrapper_client import ModbusWrapperClient
 # from pyModbusTCP.client import ModbusClient
 from std_msgs.msg import Int32MultiArray as HoldingRegister
 from pymodbus.register_read_message import ReadInputRegistersResponse
-from modbus.msg import absolute_mov
-from modbus.msg import readable_address
-from modbus.msg import stop_controlling
+from modbus_jxiot.msg import absolute_mov 
+from modbus_jxiot.msg import readable_address
+from modbus_jxiot.msg import stop_controlling
 
 if __name__=="__main__":
     rospy.init_node("modbus_client")
