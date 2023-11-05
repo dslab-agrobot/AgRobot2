@@ -64,8 +64,13 @@ class D9ModbusClient(ModbusWrapperClient):
         # init wrappered ModbusWrapperClient object
         modbusWrapperClient = ModbusWrapperClient()
         modbusWrapperClient.__init__(self,host,port,rate,ADDRESS_READ_START = 0,ADDRESS_WRITE_START = 0,NUM_REGISTERS = 0,reset_registers = reset_registers,sub_topic="modbus_wrapper/output",pub_topic="modbus_wrapper/input")
+        # modbusWrapperClient 只有pub生效，开启监听时自动监听注册消息。
+        
         self._modbusWrapperClient = modbusWrapperClient
+        
+        # 理论上他应该只有output（主机向从机读取，从机返回的）
         self.pub = rospy.Publisher("modbus_wrapper/output",HoldingRegister,queue_size=50)
+        # self.pub = rospy.Publisher("modbus_wrapper/output",HoldingRegister,queue_size=50)
         # start listening whether reading values isn't equaled with writing values
         # modbusWrapperClient.startListening()
         #self.startListening()
