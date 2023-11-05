@@ -95,13 +95,10 @@ class D9ModbusClient(ModbusWrapperClient):
                 break 
 
     def _norm_xyz(values):
-        values = deepcopy(values)
+        x,y,z = values
         # tramsform list like [x,y,z] into [0,x,0,x,0,y,0,z]
         # DEBUG, change here if you tring on few axis
-        values = [values[0]] + values
-        for v in range (0,len(values)):
-            values.insert(v*2,0)
-        return values
+        return [0,x,0,x,0,y,0,z]
 
 
     # 多轴状态读取
