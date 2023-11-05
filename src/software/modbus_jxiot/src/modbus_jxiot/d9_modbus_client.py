@@ -20,6 +20,33 @@
 import rospy
 from modbus_jxiot.modbus_wrapper_client import ModbusWrapperClient
 from std_msgs.msg import Int32MultiArray as HoldingRegister
+from copy import deepcopy
+from enum import Enum
+
+class operateDecorator (object):
+    def __init__(self,registers_per_axis,ADDRESS_READ_START,ADDRESS_WRITE_START,oper) -> None:
+        """Static parameters 
+
+        Args:
+            registers_per_axis (uint16): 每轴x个寄存器
+            
+            ADDRESS_READ_START (uint16): 读取的寄存器的基地址
+            
+            ADDRESS_WRITE_START (uint16): 写入的寄存器的基地址
+            
+            oper (uint8): 0:只读 1:只写 2:读写
+        """
+        
+        self.registers_per_axis = registers_per_axis  
+        self.ADDRESS_READ_START = ADDRESS_READ_START  
+        self.ADDRESS_WRITE_START = ADDRESS_WRITE_START  
+        self.oper = oper  
+
+class operationTable(Enum):
+    move_abs = operateDecorator(2,12160,12160,2)
+    read = operateDecorator(6,12000,None,0)
+    stop = operateDecorator(2,None,12096,1)
+    
 
 # MD-9DI6SM-TCP
 class D9ModbusClient(ModbusWrapperClient):
@@ -36,8 +63,9 @@ class D9ModbusClient(ModbusWrapperClient):
 
         # init wrappered ModbusWrapperClient object
         modbusWrapperClient = ModbusWrapperClient()
-        modbusWrapperClient.__init__(self,host,port,rate,ADDRESS_READ_START = 0,ADDRESS_WRITE_START = 0,NUM_REGISTERS = 0,reset_registers = True,sub_topic="modbus_wrapper/output",pub_topic="modbus_wrapper/input")
+        modbusWrapperClient.__init__(self,host,port,rate,ADDRESS_READ_START = 0,ADDRESS_WRITE_START = 0,NUM_REGISTERS = 0,reset_registers = reset_registers,sub_topic="modbus_wrapper/output",pub_topic="modbus_wrapper/input")
         self._modbusWrapperClient = modbusWrapperClient
+        self.pub = rospy.Publisher("modbus_wrapper/output",HoldingRegister,queue_size=50)
         # start listening whether reading values isn't equaled with writing values
         # modbusWrapperClient.startListening()
         #self.startListening()
@@ -45,16 +73,7 @@ class D9ModbusClient(ModbusWrapperClient):
     def getModbusWrapperClient(self):
         return self._modbusWrapperClient
 
-    # 多轴状态读取
-    def multiAxisStateRead(self,pub,address_read_start,num_registers):
-        rospy.loginfo("多轴状态读取")
-
-        # 读取寄存器数据
-        modbusWrapperClient = self.getModbusWrapperClient()
-        result = modbusWrapperClient.readRegisters(address_read_start,num_registers)
-        msg = HoldingRegister()
-        msg.data = result
-
+    def _pub_to(self,msg):
         # 设置循环的频率
         rate = rospy.Rate(20)
         # 定义循环次数
@@ -62,23 +81,51 @@ class D9ModbusClient(ModbusWrapperClient):
 
         rospy.loginfo("Sending arrays to the modbus server")
         while not rospy.is_shutdown():
-            pub.publish(msg)
+            self.pub.publish(msg)
             rospy.loginfo('read_holding_registers %s',str(msg.data))
             rate.sleep()
-            roate += 1
-            if roate > 50:
+            roate -= 1
+            if roate < 1:
                 #client.write_registers(address=12160,values=[0])
-                break    
+                break 
+
+    def _norm_xyz(values):
+        values = deepcopy(values)
+        # tramsform list like [x,y,z] into [0,x,0,x,0,y,0,z]
+        # DEBUG, change here if you tring on few axis
+        values = [values[0]] + values
+        for v in range (0,len(values)):
+            values.insert(v*2,0)
+        return values
+
+
+    # 多轴状态读取
+    def multiAxisStateRead(self,address_read_start,num_registers):
+        rospy.loginfo("Reading status")
+        result = self._modbusWrapperClient.readRegisters(address_read_start,num_registers)
+        msg = HoldingRegister()
+        self._pub_to(msg)
+           
 
     # 多轴绝对位置移动
-    def multiAxisAbsoluteMove(self,pub,address_read_start,num_registers,address_write_start,values):
-        rospy.loginfo("多轴绝对位置移动")
+    def multiAxisAbsoluteMove(self,values:list):
+        """Absolute moving
 
+        Args:
+            values (list): x, y and z in a list, e.g. [200,10,546]
+        """
+        rospy.loginfo("Absolute move")
+        
+        num_registers = len(values) # 3
+        address_read_start = operationTable.move_abs.value.ADDRESS_READ_START
+        address_write_start = operationTable.move_abs.value.ADDRESS_WRITE_START
         modbusWrapperClient = self.getModbusWrapperClient()
 
+        
+        values = self._norm_xyz(values)
+            
         # 写入寄存器数据
         modbusWrapperClient.writeRegisters(address=address_write_start,values=values)
-        #print("client.write_registers(address=12160,values=values):",modclient.writeRegisters(address=12160,values=values))
 
         # 读取寄存器数据
         result = modbusWrapperClient.readRegisters(address_read_start,num_registers)
@@ -87,36 +134,25 @@ class D9ModbusClient(ModbusWrapperClient):
             result = modbusWrapperClient.readRegisters(address_read_start,num_registers)
         msg = HoldingRegister()
         msg.data = result
-        # output2 = HoldingRegister()
-        # output2.data = range(40,20,-1)
         
-        # 设置循环的频率
-        rate = rospy.Rate(20)
-        # 定义循环次数
-        roate = 1
-
-        rospy.loginfo("Sending arrays to the modbus server")
-        while not rospy.is_shutdown():
-            pub.publish(msg)
-            rospy.loginfo('read_holding_registers %s',str(msg.data))
-            rate.sleep()
-            roate += 1
-            if roate > 50:
-                #client.write_registers(address=12160,values=[0])
-                break
+        self._pub_to(msg)
     
-    # 多轴绝对位置移动
-    # def multiAxisAbsoluteMoveWithDefinedAxis():
-
     # 多轴停止控制
-    def multiAxisStopControl(self,address_write_start,values):
-       rospy.loginfo("多轴停止控制")
-       
-       modbusWrapperClient = self.getModbusWrapperClient()
+    def multiAxisStopControl(self,values:list):
+        """Stop, 0 for stop 
 
-       # 停止的轴写入0
-       modbusWrapperClient.writeRegisters(address=address_write_start,values=values)
-       print("client.write_registers(address=12096,values=values):",self.writeRegisters(address=address_write_start,values=values))
+        Args:
+            values (list): x, y and z in a list, e.g. [0,1,0]
+        """
+        rospy.loginfo("STOP")
+        address_write_start = operationTable.stop.value.ADDRESS_WRITE_START
+        
+        modbusWrapperClient = self.getModbusWrapperClient()
+        values = self._norm_xyz(values)
+        
+        # 停止的轴写入0
+        modbusWrapperClient.writeRegisters(address=address_write_start,values=values)
+        print("client.write_registers(address=12096,values=values):",self.writeRegisters(address=address_write_start,values=values))
         
 
     
