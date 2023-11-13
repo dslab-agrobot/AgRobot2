@@ -62,21 +62,16 @@ class D9ModbusClient(ModbusWrapperClient):
             :param reset_registers: Defines if the holding registers should be reset to 0 after they have been read. Only possible if they are writeable
             :type reset_registers: bool
         """
-#         print("Use the appropriate Step7 Project to enable the Modbus Server on your Siemens S1200 PLC")
+
 
         # init wrappered ModbusWrapperClient object
         modbusWrapperClient = ModbusWrapperClient(host)
-        print("modbusWrapperClient = ModbusWrapperClient(self)")
-        # modbusWrapperClient.__init__(self,host)
-        print("modbusWrapperClient.__init__(self,host)")
-        # modbusWrapperClient 只有pub生效，开启监听时自动监听注册消息。
         
+        # modbusWrapperClient 只有pub生效，开启监听时自动监听注册消息。
         self._modbusWrapperClient = modbusWrapperClient
-        print("self._modbusWrapperClient = modbusWrapperClient")
         
         # 理论上他应该只有output（主机向从机读取，从机返回的）
         self.pub = rospy.Publisher("modbus_wrapper/output",HoldingRegister,queue_size=50)
-        print("self.pub = rospy.Publisher(modbus_wrapper/output,HoldingRegister,queue_size=50)")
 
 
     def getModbusWrapperClient(self):

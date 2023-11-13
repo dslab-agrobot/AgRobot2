@@ -1,47 +1,5 @@
 #! /usr/env/ python
 
-
-
-########################################################################### 
-# This software is graciously provided by HumaRobotics 
-# under the BSD License on
-# github: https://github.com/Humarobotics/modbus_wrapper
-# HumaRobotics is a trademark of Generation Robots.
-# www.humarobotics.com 
-#
-# Copyright (c) 2013, Generation Robots.
-# All rights reserved.
-# www.generationrobots.com
-#
-# This wrapper package is based on the pymodbus library developed by:
-# Galen Collins
-# github: https://github.com/bashwork/pymodbus
-#   
-# Redistribution and use in source and binary forms, with or without 
-# modification, are permitted provided that the following conditions are met:
-# 
-# 1. Redistributions of source code must retain the above copyright notice,
-#  this list of conditions and the following disclaimer.
-# 
-# 2. Redistributions in binary form must reproduce the above copyright notice,
-#  this list of conditions and the following disclaimer in the documentation 
-#  and/or other materials provided with the distribution.
-# 
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, 
-# THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR 
-# PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS 
-# BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
-# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
-# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
-# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
-# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
-# THE POSSIBILITY OF SUCH DAMAGE. 
-# 
-# The views and conclusions contained in the software and documentation are 
-# those of the authors and should not be interpreted as representing official 
-# policies, either expressed or implied, of the FreeBSD Project.
 import rospy
 from pymodbus.register_read_message import ReadInputRegistersResponse
 
@@ -239,15 +197,11 @@ class ModbusWrapperClient():
             try:
                 if not rospy.is_shutdown() :
                     
-                    # 十进制转16进制
-                    # hex_values = [format(x, '02X') for x in values]
-                    # print(hex_values)
-                    print("writing address:",type(address),",values:",values)
                     self.output = values
                     self.client.write_registers(address, values)
-                    # self.client.write_registers(address, values)
+
                     print("writing address:",address,",values:",values)
-                    # print("writing address:",address,",values:",values)
+
             except Exception as e:
                 rospy.logwarn("Could not write values %s to address %d. Exception %s",str(values),address, str(e))
                 raise e
@@ -280,18 +234,7 @@ class ModbusWrapperClient():
             except Exception as e:
                 rospy.logwarn("Could not read on address %d. Exception: %s",address,str(e))
                 raise e
-            
-            """
-            if self.__reset_registers:
-                try:
-                    self.client.write_registers(address, [0 for i in range(num_registers)])
-                except Exception as e:
-                    rospy.logwarn("Could not write to address %d. Exception: %s", address,str(e))
-                    raise e
-            """
-        # 将读取的10进制数据转换为16进制
-        #hex_tmp = [format(x, '02X') for x in tmp]
-        #print("read:",tmp)    
+ 
         return tmp
 
     def setOutput(self,address,value,timeout=0):
