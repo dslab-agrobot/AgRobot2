@@ -49,8 +49,12 @@ class AcceleDecelePulseoutput_OperationTable(Enum):
 class multiAxis_OperationTable(Enum):
     multiAxisStateRead = OperateDecorator(6,12000,None,2,0)       # 多轴状态读取
     multiAxisAbsoluteMove = OperateDecorator(2,12160,12160,2,2)   # 多轴绝对移动
-    multiAxisStop = OperateDecorator(2,None,12096,2,1)   # 多轴停止
+    multiAxisStop = OperateDecorator(2,None,12096,2,1)            # 多轴停止
     multiAxisHoming = OperateDecorator(2,None,12680,2,1)          # 多轴回原点 
+    multiAxisRelativeMove = OperateDecorator(2,None,12128,2,1)    # 多轴相对移动
+    multiAxisAbsolutespeedMove = OperateDecorator(4,None,12616,2,1)   # 多轴绝对移动 + 速度
+    multiAxisRelativespeedMove = OperateDecorator(4,None,12552,2,1)   # 多轴相对移动 + 速度
+
 
 
 class BaseModbusClient():
@@ -69,17 +73,29 @@ class BaseModbusClient():
         self.__last_output_time = rospy.get_time()
         self.__mutex = Lock()  # 定义互斥锁
         rospy.on_shutdown(self.closeConnection)  
+    
+    
     def closeConnection(self):
         """
         断开modbus连接
         Closes the connection to the modbus
         """
         self.client.close()
+    
+    
     def _norm_xyz(self,values:list):
         x,y,z = values
         # tramsform list like [x,y,z] into [0,x,0,x,0,y,0,z]
         # DEBUG, change here if you tring on few axis
         return [0,x,0,x,0,y,0,z]
+    
+    
+    def _norm_runspeed(self,values:list):
+
+        x,x_speed,y,y_speed,z,z_speed = values
+        return [0,x_speed,0,x,0,x_speed,0,x,0,y_speed,0,y,0,z_speed,0,z]
+
+    
     def _writeRegisters(self,Address_start,Values):
         """
             写入modbus寄存器  Writes modbus registers
@@ -95,10 +111,14 @@ class BaseModbusClient():
                 rospy.logwarn("Could not write values %s to address %d.\n ",str(values),address)
                 rospy.logwarn("Exception %s\n",str(e))
                 raise e
+    
+    
     def _is_None(x,y):
         if x is None:
             print("%s is None!\n",str(x))
             x = 0
+    
+    
     def _readRegisters(self,Address_start,num_registers):
         """
             读取modbus寄存器  Reads modbus registers
@@ -119,6 +139,8 @@ class BaseModbusClient():
                 rospy.logwarn("Could not read on address %d. Exception: %s",Address_start,str(e))
                 raise e
         return tmp 
+    
+
     def multiAxis_StateRead(self):
         rospy.loginfo("Reading status \n")
         
@@ -132,13 +154,14 @@ class BaseModbusClient():
         print(f"X_2(CH1) 状态位:{bin(result[7])}    当前位置：{result[9]}       当前速度：{result[11]} ")
         print(f" y(CH2)  状态位:{bin(result[13])}   当前位置：{result[15]}      当前速度：{result[17]} ")
         print(f" z(CH3)  状态位:{bin(result[19])}   当前位置：{result[21]}      当前速度：{result[23]} ")
+    
+    
     def multiAxis_AbsoluteMove(self,values):
+        
         rospy.loginfo("Absolute movement \n")
         
         values = self._norm_xyz(values)
-        num_registers = len(values)
-        print("num_registers:",num_registers)
-        
+        num_registers = len(values)       
         address_write_start = multiAxis_OperationTable.multiAxisAbsoluteMove.value.ADDRESS_WRITE_START 
         address_read_start = multiAxis_OperationTable.multiAxisAbsoluteMove.value.ADDRESS_READ_START 
 
@@ -149,11 +172,14 @@ class BaseModbusClient():
             rospy.sleep(1)
             result = self._readRegisters(address_read_start,num_registers)
             # self.multiAxisStateRead()
+    
+    
     def multiAxis_EMERGENCYSTOP(self):
         rospy.loginfo(" EMERGENCY STOP \n")
         EMERGENCYSTOP_value = 15
         address_write_start = 12999
-        self._writeRegisters(address_write_start,EMERGENCYSTOP_value)
+        self._writeRegisters(address_write_start,EMERGENCYSTOP_value)   
+    
     
     def multiAxis_Stop(self,values):
         """Stop, 0 for stop 
@@ -165,14 +191,13 @@ class BaseModbusClient():
         rospy.loginfo(" multiAxis Stop: Axis write 0 that needs to be stopped \n")
         
         values = self._norm_xyz(values)
-        num_registers = len(values)
-        
         address_write_start = multiAxis_OperationTable.multiAxisStop.value.ADDRESS_WRITE_START 
 
         self._writeRegisters(address_write_start,values)
+        
         rospy.loginfo(" The specified axis has stopped\n")
     
-
+    
     def multiAxis_Origin(self,values):
         """Origin, 
         0 for the current speed returning to the origin
@@ -183,54 +208,38 @@ class BaseModbusClient():
         """
         rospy.loginfo(" To Origin  \n")
         values = self._norm_xyz(values)
-        num_registers = len(values)
-        
         address_write_start = multiAxis_OperationTable.multiAxisHoming.value.ADDRESS_WRITE_START 
-
-        self._writeRegisters(address_write_start,values)
-
-        address_read_start = multiAxis_OperationTable.multiAxisAbsoluteMove.value.ADDRESS_READ_START 
-        result = self._readRegisters(address_read_start,num_registers)
-        while result != values:
-            rospy.sleep(1)
-            result = self._readRegisters(address_read_start,num_registers)
-
+        self._writeRegisters(address_write_start,values)       
+    
+    
     def multiAxis_Origin_all(self):
         rospy.loginfo(" To Origin with all Axis \n")
         Origin_value = 15
         address_write_start = 12997
         self._writeRegisters(address_write_start,Origin_value)
 
-        address_read_start = multiAxis_OperationTable.multiAxisAbsoluteMove.value.ADDRESS_READ_START 
-        result = self._readRegisters(address_read_start,num_registers)
-        while result != values:
-            rospy.sleep(1)
-            result = self._readRegisters(address_read_start,num_registers)
     
-
     def multiAxisAbsRunSpeed(self):
         rospy.loginfo(" Absolute move with Running_Speed set  \n")
         
+        values = self._norm_runspeed(values)      
+        address_write_start = multiAxis_OperationTable.multiAxisAbsolutespeedMove.value.ADDRESS_WRITE_START 
+        self._writeRegisters(address_write_start,values)
+
     
-    def multiAxisAbsSpeed(self):
-        rospy.loginfo(" Absolute move with Speed set  \n")
+    def multiAxis_relativeMove(self,values):
+        rospy.loginfo("relative   Move \n")
+        values = self._norm_xyz(values)
+        address_write_start = multiAxis_OperationTable.multiAxisRelativeMove.value.ADDRESS_WRITE_START 
+        self._writeRegisters(address_write_start,values)
 
-
-    def multiAxisRelativeMove(self,values):
-        rospy.loginfo("Relative movement \n")
-        
-        num_registers = multiAxis_OperationTable.multiAxisStateRead.value.registers_per_axis
-
-        address_read_start = multiAxis_OperationTable.multiAxisStateRead.value.ADDRESS_READ_START + (num_axis*num_registers) 
-        number_of_words = multiAxis_OperationTable.multiAxisStateRead.value.Number_of_words
-
-
+    
     def multiAxisRelRunSpeed(self):
         rospy.loginfo(" Relative move with Running_Speed set  \n")
+        values = self._norm_runspeed(values)      
+        address_write_start = multiAxis_OperationTable.multiAxisRelativespeedMove.value.ADDRESS_WRITE_START 
+        self._writeRegisters(address_write_start,values)
 
-
-    def multiAxisRelSpeed(self):
-        rospy.loginfo(" Relative move with Speed set  \n")
 
 
 
