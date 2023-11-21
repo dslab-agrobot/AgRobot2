@@ -1,9 +1,9 @@
 int16 operation
-uint16 p1
-uint16 p2
-uint16 p3
-uint16 p4
-uint16 p5
-uint16 p6
+uint16 A_x
+uint32 x_speed
+uint16 A_y
+uint32 y_speed
+uint16 A_z
+uint32 z_speed
 
 
