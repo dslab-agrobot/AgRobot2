@@ -4,13 +4,13 @@
 
 ## 1. 概述
 
-`ros_ht_msg`是用于控制四轮四转机器人底盘的功能包，基于ROS[ROS介绍](1.1ROS介绍.md)和CAN[CAN介绍](1.2CAN介绍)网络通讯；
+`ros_ht_msg`是用于控制四轮四转机器人底盘的功能包，基于ROS[ROS介绍](1.01ROS介绍.md)和CAN[CAN介绍](1.02CAN介绍)网络通讯；
 
-`ros_ht_msg`功能包提供了以ROS话题通讯[ROS话题通信介绍](1.3ros话题通信介绍.md)的消息控制机器人底盘的功能。
+`ros_ht_msg`功能包提供了以ROS话题通讯[ROS话题通信介绍](1.03ros话题通信介绍.md)的消息控制机器人底盘的功能。
 
 `ros_ht_msg`功能包主要由四轮四转底盘供应商提供，功能包中包括了必要的文档、示例、消息类型等文件夹；
 
-### 依赖项[依赖项介绍](1.4依赖项介绍.md)
+## 依赖项[依赖项介绍](1.04依赖项介绍.md)
 
 ```cmake
 find_package(catkin REQUIRED COMPONENTS
@@ -22,7 +22,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 ```
 
-### 安装  install with Github
+## 安装  install with Github
 
 - 本功能包基于python3；
 
@@ -37,7 +37,7 @@ find_package(catkin REQUIRED COMPONENTS
   git clone 功能包.git
   ```
 
-### 编译
+## 编译
 
 ```
 cd ~/catkin_ws
@@ -54,11 +54,11 @@ catkin build --pre-clean
 
 ## 2. 使用方法
 
-### 使用前准备
+## 使用前准备
 
-1. **确认编译的系统架构，选择合适的动态链接库文件`libcontrolcan.so`；**[动静态链接库介绍](1.5动静态链接库介绍.md)
+1. **确认编译的系统架构，选择合适的动态链接库文件`libcontrolcan.so`；**[动静态链接库介绍](1.05动静态链接库介绍.md)
 
-   - 在功能包`lib`文件夹下已经设置好四种系统架构下的相应的文件，同时还有相应的静态链接库文件，因为四种动态链接库文件均为同名文件`libcontrolcan.so`，本功能包采用软链接[软链接介绍](1.6软链接介绍.md)的方式调用该文件；
+   - 在功能包`lib`文件夹下已经设置好四种系统架构下的相应的文件，同时还有相应的静态链接库文件，因为四种动态链接库文件均为同名文件`libcontrolcan.so`，本功能包采用软链接[软链接介绍](1.06软链接介绍.md)的方式调用该文件；
 
      ```
      lib文件夹tree:
@@ -113,13 +113,13 @@ catkin build --pre-clean
 
 2. **连接CAN网络设备**：
 
-   - 本项目使用 创芯科技 提供的 **CANalyst-Ⅱ分析仪**[CANalyst-Ⅱ分析仪介绍](1.7CANalyst-II分析仪介绍.md)作为CAN网络通讯设备，设备自身接线方式有对应手册，位于功能包`doc`文件夹中，文件名为：`USBCAN_Test_Process_V1.70.pdf`；
-   - CAN网络通讯设备通过TCP协议[TCP介绍](1.8TCP介绍.md)和主机通讯[主机通讯介绍](1.9主机通讯介绍.md)；
+   - 本项目使用 创芯科技 提供的 **CANalyst-Ⅱ分析仪**[CANalyst-Ⅱ分析仪介绍](1.07CANalyst-II分析仪介绍.md)作为CAN网络通讯设备，设备自身接线方式有对应手册，位于功能包`doc`文件夹中，文件名为：`USBCAN_Test_Process_V1.70.pdf`；
+   - CAN网络通讯设备通过TCP协议[TCP介绍](1.08TCP介绍.md)和主机通讯[主机通讯介绍](1.09主机通讯介绍.md)；
    - 使用该设备时，涉及到USB底层驱动协议[USB底层驱动协议介绍](1.10USB底层驱动协议介绍.md)，在运行时需要加`sudo`获取权限，否则 USB设备没有权限操作；也可以增加新的udev规则[udev规则介绍](1.11udev规则介绍.md)，使得后续调用不用频繁获取权限，具体方式可参考`doc`文件夹中的`HT01_ROS_Comm_Package_Instructions.pdf`文件。
 
 
 
-### 使用
+## 使用
 
 - 方式一：单一文件启动功能包（可用于前期基础测试）：
 
@@ -185,11 +185,11 @@ catkin build --pre-clean
 
 ## 3. 节点信息
 
-### 节点名称：`/publish_ht_msg`
+## 节点名称：`/publish_ht_msg`
 
 该节点接受到工控机发布的命令，转换为CAN帧转发给底盘电机，并收集地盘电机相关状态帧[状态帧介绍](1.12状态帧介绍.md)，转换为设定好的信息展示；
 
-### 订阅的话题：
+## 订阅的话题：
 
 - /HT_Control
   - 消息类型：`ros_ht_msg/ht_control`；具体消息格式可参看功能包中`msg`文件夹下`ht_control.msg`文件。
