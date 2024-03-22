@@ -4,7 +4,8 @@ remote_theme: carlosperate/jekyll-theme-rtd
 
 # Theme settings:
 site_author: DSLAB AgRobot
-repo_url: "https://github.com/dslab-agrobot/AgRobot2/tree/gh-pages"
+repo_url: "https://github.com/dslab-agrobot/AgRobot2"
+edit_uri: "blob/gh-pages"
 edit_on_github: true
 github_docs_folder: false
 sticky_navigation: true

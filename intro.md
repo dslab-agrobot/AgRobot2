@@ -10,7 +10,7 @@ nav_order: 1
 # 🚜 第一代农业机器人
 
 <center>
-<img src='assets\img\20240321\ag_v1_0.jpg' width='32%'> &nbsp
+<img src='assets\img\20240321\ag_v1_0.jpg' width='32%'> 
 <img src='assets\img\20240321\ag_v1_1.jpg' width='60%'>
 <p>图1 第一代农业机器人</p>
 </center>
@@ -23,7 +23,7 @@ nav_order: 1
 立足新的起点，迈上新的征程。积累了相当的实践经验后，团队设计并开发了第二代农业机器人，根据使用环境分为四轮四转式和履带式两个版本。其中，四轮四转农业机器人（图2）可以在间作的农田中快速灵活移动，通过摄像头捕获农田信息，并通过搭载的滑台和除草电机进行精确切削，旨在解决兰州百合打顶人工操作费时劳力的问题。
 
 <center>
-<img src='assets\img\20240321\ag_v2_0.png' width='50%'> &nbsp
+<img src='assets\img\20240321\ag_v2_0.png' width='50%'> 
 <img src='assets\img\20240321\ag_v2_1.jpg' width='37%'>
 <p>图2 第二代四轮四转农业机器人</p>
 </center>
@@ -31,7 +31,7 @@ nav_order: 1
 由于甘肃、云南、西藏等省份农田多山地丘陵，农田之间不平整，我们团队设计了履带式农业机器人（图3）。尽管履带式机器人无法做到四轮四转机器人的灵活移动，但机器人的动力电机进行了增强，加上履带结构，使这款机器人能够满足载重300kg进行30度爬坡，满足大部分改造后的丘陵山地农田。
 
 <center>
-<img src='assets\img\20240321\ag_v2.1_0.jpg' width='50%'> &nbsp
+<img src='assets\img\20240321\ag_v2.1_0.jpg' width='50%'> 
 <img src='assets\img\20240321\ag_v2.1_1.jpg' width='44%'>
 <p>图3 第二代履带式农业机器人</p>
 </center>
@@ -43,19 +43,19 @@ nav_order: 1
 此外，我们团队也十分重视农田的数字化进程，设计开发了农业数字化平台（图4），对农田传感器数据和机器人数据进行汇总和分析，推进农田水肥一体化和农机智能化基础上农业智能化，提供切实可行的数字化农业解决方案。
 
 <center>
-<img src='assets\img\20240321\web.png' width='90%'> &nbsp
+<img src='assets\img\20240321\web.png' width='90%'> 
 <p>图4 农业数字化平台</p>
 </center>
 
 <center>
-<img src='assets\img\20240321\data.png' width='90%'> &nbsp
+<img src='assets\img\20240321\data.png' width='90%'> 
 <p>图5 兰州百合数据集</p>
 </center>
 
 除上述实践外，我们团队也取得了诸多科研成果，包括高水平论文八篇，发明专利授权两项，授权实用新型专利两项，软著两项，项目开源代码库，包含一万八千张图片的土豆杂草数据集，和预计包含张图片的百合杂草数据集。
 
 <center>
-<img src='assets\img\20240321\BigPicture.png' width='90%'> &nbsp
+<img src='assets\img\20240321\BigPicture.png' width='90%'> 
 <p>图6 智能农场概念图</p>
 </center>
 
