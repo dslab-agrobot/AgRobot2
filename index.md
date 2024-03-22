@@ -28,7 +28,7 @@ This doc of the latest version (AgRobot V2).
 ├── Software
 ```
 
-What is AgRobot and why we need it see in [Inro](./intro.md)
+What is AgRobot and why we need it see in [Intro](./intro.md)
 
 
 
