@@ -5,6 +5,11 @@ nav_order: 1
 ---
 <!-- [Chinese version(中文版)](./intro_zh.md) -->
 
+<video width='100%' controls>
+    <source src="assets\img\20240321\intro.mp4" type="video/mp4">
+    您的浏览器不支持 video 标签。
+</video>
+
 兰州大学信息科学与工程学院DSLAB农业机器人团队自2018年创立以来，积极学习国内外智慧农田与智能农机的先进案例，立足甘肃的农业与气候条件，着眼未来中国“谁来种地”的世纪之问，打造具有自主知识产权的农业机器人团队，设计研发独立自主、自动化和数字化的农业机器人，解决智慧农业中农机智能化的痛点。
 
 # 🚜 第一代农业机器人
@@ -61,5 +66,29 @@ nav_order: 1
 
 目前，团队计划继续推进农田数字化研究工作，旨在实现农作物的“耕种管收”自动化和农田农机智能化调度。我们计划在申请的土地上种植兰州市市花-“苦水玫瑰”。它具有原始天然灌木基因，长期处于高海拔、寒冷、干旱少雨的生长环境中，形成了“苦水玫瑰”特有的品质和优势，具有很高的经济和科研价值。对该区域进行水肥一体化改造后，我们团队计划架设多种环境传感器与无线网络，初步实现灌溉、给肥自动化。并部署农业机器人所需的基站和控制中心，满足团队农业机器人的运行需求。
 该区域建成后，不仅可以作为智慧农业示范园区，还可以作为人工智能与自动化教育基地，和观光农业展示区。项目在研究中需要结合实际情况进行人工智能部署和自动化实践，团队中教授、副教授和博士可以对感兴趣的同学进行讲解和指导，将理论知识落到实处。而本项目计划种植的苦水玫瑰具有较高的观赏价值，兰州市花与智慧农业的结合势必碰撞出独特美丽的火花。
+
+# 开源项目、数据集和科研成果
+
+<center>
+<img src='assets\img\20240321\papper.png' width='95%'> 
+
+<p>图7 第一代农业机器人搭载自动机器学习模型</p>
+</center>
+
+<center>
+<img src='assets\img\20240321\tsn.png' width='95%'> 
+
+<p>图8 TSN测试平台</p>
+</center>
+
+<p align=center> AgRobot 项目列表 </p>
+
+|-----|-----|-----|
+|<img src="assets\img\03-11-01\agrobot_v1.png" width="200">|[AgRobot V1](https://github.com/dslab-agrobot/AgRobot)|第一代农业机器人|
+|<img src="assets\img\03-11-01\agropot.png" width="200">|[AgRobot V1.5](https://github.com/dslab-agrobot/AgroPot)|第一代农业机器人执行框架|
+|<img src="assets\img\20240321\ag_v2_1.jpg" width="200">|[AgRobot V2](https://github.com/dslab-agrobot/AgRobot2)|第二代四轮四转农业机器人|
+|<img src="assets\img\20240321\ag_v2.1_0.jpg" width="200">|[AgRobot V2](https://github.com/dslab-agrobot/AgRobot2)|第二代履带式农业机器人|
+|<img src="assets\img\20240321\ds.png" width="200">|[Potatoes Dataset](https://www.kaggle.com/datasets/jchrysanthemum/potato-and-weeds)|
+
 
 
